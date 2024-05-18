@@ -10,7 +10,7 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QMainWindow, QSpinBox, QDateEdit, QPushButton, QTableWidgetItem, QFileDialog, QMessageBox, \
     QListWidgetItem, QRadioButton, QWidget
 
-from App.src.parse_text import parser_text
+from src.parse_text import parser_text
 from view_card_window import ViewCardWin
 
 PATH_TO_DATA_FILE = 'data.json'
