@@ -45,6 +45,8 @@ class ViewCardWin(QMainWindow):
         self.pushButton_5.clicked.connect(self.dump_data)
         self.pushButton_6.clicked.connect(self.delete_work_book)
 
+        self.tableWidget.setHorizontalHeaderLabels(['№ Записи', 'Дата', 'Сведенья', 'Документ', 'Удаление'])
+
         QTimer.singleShot(100, self.resize_table)
 
     def delete_work_book(self):

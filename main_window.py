@@ -32,7 +32,9 @@ class MainWindow(QMainWindow):
         for item_index in range(self.listWidget.count()):
             item = self.listWidget.item(item_index)
             widget = self.listWidget.itemWidget(item)
+            widget.checkBox.blockSignals(True)
             widget.checkBox.setChecked(self.checkBox.isChecked())
+            widget.checkBox.blockSignals(False)
 
     def dump_checked(self):
         if not self.checked_cards:
