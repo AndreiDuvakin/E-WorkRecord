@@ -41,6 +41,7 @@ class ViewCardWin(QMainWindow):
         self.card_info = card
         self.pushButton_4.clicked.connect(self.add_row)
         self.tableWidget.verticalHeader().setVisible(False)
+        self.widget.setVisible(False)
 
         self.pushButton_5.clicked.connect(self.dump_data)
         self.pushButton_6.clicked.connect(self.delete_work_book)

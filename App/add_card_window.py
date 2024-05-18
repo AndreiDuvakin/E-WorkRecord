@@ -1,4 +1,5 @@
 import datetime
+import json
 import os
 import uuid
 from json import loads, dumps
@@ -7,7 +8,8 @@ import requests
 from PyQt5 import uic
 from PyQt5.QtCore import QTimer, pyqtSignal, QThread
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QMainWindow, QSpinBox, QDateEdit, QPushButton, QTableWidgetItem, QFileDialog, QMessageBox
+from PyQt5.QtWidgets import QMainWindow, QSpinBox, QDateEdit, QPushButton, QTableWidgetItem, QFileDialog, QMessageBox, \
+    QListView, QListWidgetItem
 
 from App.src.parse_text import parser_text
 from view_card_window import ViewCardWin
@@ -29,6 +31,7 @@ class AddCardWin(QMainWindow):
         self.pushButton_4.clicked.connect(self.add_row)
         self.tableWidget.verticalHeader().setVisible(False)
         self.pushButton_6.setVisible(False)
+        self.widget.setVisible(False)
         QTimer.singleShot(100, self.resize_table)
 
     def delete_row(self):
@@ -157,6 +160,9 @@ class AddCardWin(QMainWindow):
         if file_name:
             self.image_path = file_name
             self.start_ocr_thread()
+            pixmap = QPixmap(self.image_path)
+            self.widget.setVisible(True)
+            self.label_11.setPixmap(pixmap)
 
     def start_ocr_thread(self):
         self.ocr_thread = OCRThread(self.image_path)
@@ -164,9 +170,24 @@ class AddCardWin(QMainWindow):
         self.ocr_thread.start()
 
     def on_ocr_completed(self, result):
-        if 'Error: ' in result:
+        if 'Error: ' in result[0]:
             QMessageBox.warning(self, 'Ошибка оцифровки', result)
-        print(parser_text(result))
+            return
+
+        parsed_text, all_word = parser_text(result[0])
+
+        self.lineEdit.setText(parsed_text['title']['serial'])
+        self.lineEdit_2.setText(parsed_text['title']['number'])
+        self.lineEdit_3.setText(parsed_text['title']['last_name'])
+        self.lineEdit_4.setText(parsed_text['title']['first_name'])
+        self.lineEdit_5.setText(parsed_text['title']['patronymic'])
+        self.lineEdit_6.setText(parsed_text['title']['profession'])
+        self.lineEdit_7.setText(parsed_text['title']['education'])
+
+        for word in all_word:
+            list_item = QListWidgetItem()
+            list_item.setText(word)
+            self.listWidget.addItem(list_item)
 
     def back(self):
         self.par.show()
@@ -174,7 +195,7 @@ class AddCardWin(QMainWindow):
 
 
 class OCRThread(QThread):
-    ocr_completed = pyqtSignal(str, name='ocr_completed')
+    ocr_completed = pyqtSignal(list, name='ocr_completed')
 
     def __init__(self, image_path):
         super().__init__()
@@ -187,12 +208,12 @@ class OCRThread(QThread):
         try:
             response = requests.post(url, files=files)
         except Exception:
-            text = f"Error: Ошибка подключения к серверу"
+            text = [f"Error: Ошибка подключения к серверу"]
             self.ocr_completed.emit(text)
             return
 
         if response.status_code == 200:
-            text = response.json().get('text', 'No text found')
+            text = response.json()
         else:
-            text = f"Error: {response.status_code}"
+            text = [f"Error: {response.status_code}"]
         self.ocr_completed.emit(text)

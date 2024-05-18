@@ -1,4 +1,6 @@
+import os
 import random
+import uuid
 from string import ascii_lowercase, digits
 
 import cv2
@@ -19,9 +21,9 @@ def preprocess_image_first(image):
     return binary_image
 
 
-def preprocess_image_second(image_path):
-    img = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-    gaussian_img = cv2.GaussianBlur(img, (5, 5), 0)
+def preprocess_image_second(image):
+    gray_img = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    gaussian_img = cv2.GaussianBlur(gray_img, (5, 5), 0)
     ret, thresh_img = cv2.threshold(gaussian_img, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
     return thresh_img
 
@@ -50,7 +52,7 @@ def text_recognition():
     text = ocr_image(preprocessed_image)
     response.append(text)
 
-    return jsonify({'text': text})
+    return jsonify(response)
 
 
 def main():
