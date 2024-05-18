@@ -1,5 +1,4 @@
 import datetime
-import json
 import os
 import uuid
 from json import loads, dumps
@@ -9,7 +8,7 @@ from PyQt5 import uic
 from PyQt5.QtCore import QTimer, pyqtSignal, QThread
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QMainWindow, QSpinBox, QDateEdit, QPushButton, QTableWidgetItem, QFileDialog, QMessageBox, \
-    QListView, QListWidgetItem
+    QListWidgetItem, QRadioButton, QWidget
 
 from App.src.parse_text import parser_text
 from view_card_window import ViewCardWin
@@ -32,6 +31,12 @@ class AddCardWin(QMainWindow):
         self.tableWidget.verticalHeader().setVisible(False)
         self.pushButton_6.setVisible(False)
         self.widget.setVisible(False)
+        self.widget_2.setVisible(False)
+        self.widget_3.setVisible(False)
+
+        self.parsed_texts = []
+        self.all_words = []
+
         QTimer.singleShot(100, self.resize_table)
 
     def delete_row(self):
@@ -174,7 +179,33 @@ class AddCardWin(QMainWindow):
             QMessageBox.warning(self, 'Ошибка оцифровки', result[0])
             return
 
-        parsed_text, all_word = parser_text(result[0])
+        self.widget_2.setVisible(True)
+        self.widget_3.setVisible(True)
+
+        layout = self.widget_3.children()[0]
+        count = layout.count()
+
+        for i in range(count):
+            item = layout.itemAt(i)
+            if item.widget():
+                item.widget().close()
+
+        for variant_index in range(len(result)):
+            parsed_text, all_word = parser_text(result[variant_index])
+            self.parsed_texts.append(parsed_text)
+            self.all_words.append(all_word)
+            radio_button = QRadioButton()
+            radio_button.setText(f'Вариант {str(variant_index + 1)}')
+            radio_button.toggled.connect(self.render_result)
+            radio_button.index = variant_index
+            self.widget_3.children()[0].addWidget(radio_button)
+
+    def render_result(self):
+        self.listWidget.clear()
+        sender = self.sender()
+
+        parsed_text = self.parsed_texts[sender.index]
+        all_word = self.all_words[sender.index]
 
         self.lineEdit.setText(parsed_text['title']['serial'])
         self.lineEdit_2.setText(parsed_text['title']['number'])
@@ -188,6 +219,8 @@ class AddCardWin(QMainWindow):
             list_item = QListWidgetItem()
             list_item.setText(word)
             self.listWidget.addItem(list_item)
+
+        self.resize_table()
 
     def back(self):
         self.par.show()

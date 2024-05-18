@@ -24,7 +24,10 @@ def parser_text(text):
     last_name_match = re.search(r'\bфамилия[:\s]+([А-ЯЁа-яё]+)', text, re.IGNORECASE)
     text_rows = text.split('\n')
     number_index = list(filter(lambda x: '№' in x, text_rows))
-    next_index = text_rows.index(number_index[0])
+    if not number_index:
+        next_index = 3
+    else:
+        next_index = text_rows.index(number_index[0])
     if last_name_match:
         data["title"]["last_name"] = last_name_match.group(1)
     else:
