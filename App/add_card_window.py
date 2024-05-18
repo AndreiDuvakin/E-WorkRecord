@@ -3,16 +3,21 @@ import os
 import uuid
 from json import loads, dumps
 
+import requests
 from PyQt5 import uic
-from PyQt5.QtCore import QTimer
+from PyQt5.QtCore import QTimer, pyqtSignal, QThread
+from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QMainWindow, QSpinBox, QDateEdit, QPushButton, QTableWidgetItem, QFileDialog, QMessageBox
 
+from App.src.parse_text import parser_text
 from view_card_window import ViewCardWin
 
 PATH_TO_DATA_FILE = 'data.json'
 
 
 class AddCardWin(QMainWindow):
+    response_received = pyqtSignal(name='response_received')
+
     def __init__(self, parent):
         super().__init__()
         uic.loadUi('ui/AddCardWin.ui', self)
@@ -146,8 +151,48 @@ class AddCardWin(QMainWindow):
             QMessageBox.information(self, 'Данные выгружены', 'Данные успешно выгружены в файл')
 
     def lets_scan(self):
-        pass
+        options = QFileDialog.Options()
+        file_name, _ = QFileDialog.getOpenFileName(self, "Select Image File", "", "Images (*.png *.jpg *.jpeg *.bmp)",
+                                                   options=options)
+        if file_name:
+            self.image_path = file_name
+            self.start_ocr_thread()
+
+    def start_ocr_thread(self):
+        self.ocr_thread = OCRThread(self.image_path)
+        self.ocr_thread.ocr_completed.connect(self.on_ocr_completed)
+        self.ocr_thread.start()
+
+    def on_ocr_completed(self, result):
+        if 'Error: ' in result:
+            QMessageBox.warning(self, 'Ошибка оцифровки', result)
+        print(parser_text(result))
 
     def back(self):
         self.par.show()
         self.close()
+
+
+class OCRThread(QThread):
+    ocr_completed = pyqtSignal(str, name='ocr_completed')
+
+    def __init__(self, image_path):
+        super().__init__()
+        self.image_path = image_path
+
+    def run(self):
+        url = 'http://localhost:6543/recognition'
+        files = {'image': open(self.image_path, 'rb')}
+
+        try:
+            response = requests.post(url, files=files)
+        except Exception:
+            text = f"Error: Ошибка подключения к серверу"
+            self.ocr_completed.emit(text)
+            return
+
+        if response.status_code == 200:
+            text = response.json().get('text', 'No text found')
+        else:
+            text = f"Error: {response.status_code}"
+        self.ocr_completed.emit(text)

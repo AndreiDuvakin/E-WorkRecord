@@ -12,7 +12,7 @@ def check_data_file():
     try:
         with open(PATH_TO_DATA_FILE, 'r', encoding='utf-8') as file:
             loads(file.read())
-    except JSONDecodeError:
+    except Exception:
         with open(PATH_TO_DATA_FILE, 'w', encoding='utf-8') as file:
             file.write('[]')
 
