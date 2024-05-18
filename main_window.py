@@ -34,6 +34,7 @@ class MainWindow(QMainWindow):
             widget = self.listWidget.itemWidget(item)
             widget.checkBox.blockSignals(True)
             widget.checkBox.setChecked(self.checkBox.isChecked())
+            self.checked_cards.append(widget.checkBox.card)
             widget.checkBox.blockSignals(False)
 
     def dump_checked(self):

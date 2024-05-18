@@ -188,7 +188,29 @@ class ViewCardWin(QMainWindow):
             ]
         }
 
-        self.card_info = data[data.index(card_info)]
+        self.card_info = {
+            "uuid": self.card_info['uuid'],
+            "title": {
+                "serial": self.lineEdit.text(),
+                "number": self.lineEdit_2.text(),
+                "first_name": self.lineEdit_4.text(),
+                "last_name": self.lineEdit_3.text(),
+                "patronymic": self.lineEdit_5.text(),
+                "birthday": str(self.dateEdit.date().toPyDate()),
+                "issue_date": str(self.dateEdit_2.date().toPyDate()),
+                "profession": self.lineEdit_6.text(),
+                "education": self.lineEdit_7.text()
+            },
+            "job": [
+                {
+                    "number": self.tableWidget.cellWidget(row, 0).value(),
+                    "date": str(self.tableWidget.cellWidget(row, 1).date().toPyDate()),
+                    "job_info": self.tableWidget.item(row, 2).text(),
+                    "basis": self.tableWidget.item(row, 3).text()
+                }
+                for row in range(self.tableWidget.rowCount())
+            ]
+        }
 
         with open(PATH_TO_DATA_FILE, 'w', encoding='utf-8') as write_file:
             write_file.write(dumps(data))
