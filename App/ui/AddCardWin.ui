@@ -197,7 +197,7 @@
       <item row="9" column="0" colspan="3">
        <widget class="QPushButton" name="pushButton_2">
         <property name="text">
-         <string>Оцифровать</string>
+         <string>Оцифровать по фото</string>
         </property>
        </widget>
       </item>
