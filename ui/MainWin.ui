@@ -97,7 +97,7 @@
       <item row="1" column="4">
        <widget class="QLineEdit" name="lineEdit">
         <property name="placeholderText">
-         <string>Поиск</string>
+         <string>Поиск по фио</string>
         </property>
        </widget>
       </item>
@@ -129,6 +129,13 @@
       </item>
       <item row="4" column="1" colspan="7">
        <widget class="QListWidget" name="listWidget"/>
+      </item>
+      <item row="3" column="2">
+       <widget class="QCheckBox" name="checkBox">
+        <property name="text">
+         <string>Выделить все</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </item>
