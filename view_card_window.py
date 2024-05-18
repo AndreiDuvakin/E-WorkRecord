@@ -43,8 +43,23 @@ class ViewCardWin(QMainWindow):
         self.tableWidget.verticalHeader().setVisible(False)
 
         self.pushButton_5.clicked.connect(self.dump_data)
+        self.pushButton_6.clicked.connect(self.delete_work_book)
 
         QTimer.singleShot(100, self.resize_table)
+
+    def delete_work_book(self):
+        with open(PATH_TO_DATA_FILE, 'r', encoding='utf-8') as file:
+            data = loads(file.read())
+
+        card_info = list(filter(lambda card: card['uuid'] == self.card_info['uuid'], data))[0]
+
+        del data[data.index(card_info)]
+
+        with open(PATH_TO_DATA_FILE, 'w', encoding='utf-8') as write_file:
+            write_file.write(dumps(data))
+
+        self.par.show()
+        self.close()
 
     def dump_data(self):
         self.save_data()
@@ -61,7 +76,6 @@ class ViewCardWin(QMainWindow):
                 file.write(dumps(dump_data_json))
 
             QMessageBox.information(self, 'Данные выгружены', 'Данные успешно выгружены в файл')
-            print(self.card_info)
 
     def make_table(self, card):
         self.tableWidget.clear()

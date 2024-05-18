@@ -219,6 +219,13 @@
         </property>
        </widget>
       </item>
+      <item row="10" column="0" colspan="3">
+       <widget class="QPushButton" name="pushButton_5">
+        <property name="text">
+         <string>Выгрузить в JSON</string>
+        </property>
+       </widget>
+      </item>
       <item row="2" column="1" colspan="2">
        <widget class="QLineEdit" name="lineEdit_3"/>
       </item>
@@ -255,10 +262,10 @@
         </property>
        </widget>
       </item>
-      <item row="10" column="0" colspan="3">
-       <widget class="QPushButton" name="pushButton_5">
+      <item row="11" column="0" colspan="3">
+       <widget class="QPushButton" name="pushButton_6">
         <property name="text">
-         <string>Выгрузить в JSON</string>
+         <string>Удалить книжку</string>
         </property>
        </widget>
       </item>

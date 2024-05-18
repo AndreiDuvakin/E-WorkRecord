@@ -1,10 +1,11 @@
 import datetime
+import os
 import uuid
 from json import loads, dumps
 
 from PyQt5 import uic
 from PyQt5.QtCore import QTimer
-from PyQt5.QtWidgets import QMainWindow, QSpinBox, QDateEdit, QPushButton, QTableWidgetItem
+from PyQt5.QtWidgets import QMainWindow, QSpinBox, QDateEdit, QPushButton, QTableWidgetItem, QFileDialog, QMessageBox
 
 from view_card_window import ViewCardWin
 
@@ -22,6 +23,7 @@ class AddCardWin(QMainWindow):
         self.pushButton_3.clicked.connect(self.save_data)
         self.pushButton_4.clicked.connect(self.add_row)
         self.tableWidget.verticalHeader().setVisible(False)
+        self.pushButton_6.setVisible(False)
         QTimer.singleShot(100, self.resize_table)
 
     def delete_row(self):
@@ -108,6 +110,40 @@ class AddCardWin(QMainWindow):
         self.view_win = ViewCardWin(self.par, card_info)
         self.view_win.show()
         self.close()
+
+    def dump_data(self):
+        card_info = {
+            "title": {
+                "serial": self.lineEdit.text(),
+                "number": self.lineEdit_2.text(),
+                "first_name": self.lineEdit_4.text(),
+                "last_name": self.lineEdit_3.text(),
+                "patronymic": self.lineEdit_5.text(),
+                "birthday": str(self.dateEdit.date().toPyDate()),
+                "issue_date": str(self.dateEdit_2.date().toPyDate()),
+                "profession": self.lineEdit_6.text(),
+                "education": self.lineEdit_7.text()
+            },
+            "job": [
+                {
+                    "number": self.tableWidget.cellWidget(row, 0).value(),
+                    "date": str(self.tableWidget.cellWidget(row, 1).date().toPyDate()),
+                    "job_info": self.tableWidget.item(row, 2).text(),
+                    "basis": self.tableWidget.item(row, 3).text()
+                }
+                for row in range(self.tableWidget.rowCount())
+            ]
+        }
+
+        options = QFileDialog.Options()
+        directory = QFileDialog.getExistingDirectory(self, "Выберите путь сохранения", options=options)
+        if directory:
+            file_name = os.path.join(directory,
+                                     f'{card_info["title"]["last_name"]}_{card_info["title"]["first_name"]}.json')
+            with open(file_name, 'w', encoding='utf-8') as file:
+                file.write(dumps(card_info))
+
+            QMessageBox.information(self, 'Данные выгружены', 'Данные успешно выгружены в файл')
 
     def lets_scan(self):
         pass

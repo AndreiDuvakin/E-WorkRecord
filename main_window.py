@@ -1,6 +1,6 @@
 from json import loads
 
-from PyQt5.QtWidgets import QMainWindow, QListWidgetItem, QListWidget
+from PyQt5.QtWidgets import QMainWindow, QListWidgetItem
 from PyQt5 import uic
 
 from add_card_window import AddCardWin
