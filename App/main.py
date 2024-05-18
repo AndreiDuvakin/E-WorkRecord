@@ -1,7 +1,7 @@
 import sys
 
 from PyQt5.QtWidgets import QApplication
-from json import loads, JSONDecodeError
+from json import loads
 
 from main_window import MainWindow
 

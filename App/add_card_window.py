@@ -171,7 +171,7 @@ class AddCardWin(QMainWindow):
 
     def on_ocr_completed(self, result):
         if 'Error: ' in result[0]:
-            QMessageBox.warning(self, 'Ошибка оцифровки', result)
+            QMessageBox.warning(self, 'Ошибка оцифровки', result[0])
             return
 
         parsed_text, all_word = parser_text(result[0])

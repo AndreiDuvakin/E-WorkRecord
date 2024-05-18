@@ -1,6 +1,4 @@
-import os
 import random
-import uuid
 from string import ascii_lowercase, digits
 
 import cv2
@@ -56,7 +54,7 @@ def text_recognition():
 
 
 def main():
-    app.run('0.0.0.0', port=6543)
+    serve(app, host='0.0.0.0', port=6543)
 
 
 if __name__ == '__main__':
