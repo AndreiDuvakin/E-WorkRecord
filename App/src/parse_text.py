@@ -1,5 +1,6 @@
 import datetime
 import re
+from string import punctuation
 
 
 def parser_text(text):
@@ -132,6 +133,10 @@ def parser_text(text):
         except ValueError:
             pass
 
+    for key in data['title'].keys():
+        if key not in ['birthday', 'issue_date']:
+            data['title'][key] = replace_punctuation_and_lower(data['title'][key])
+
     all_word = []
     for word_row in [words.split() for words in text_rows]:
         for word in word_row:
@@ -139,3 +144,9 @@ def parser_text(text):
                 all_word.append(word)
 
     return data, all_word
+
+
+def replace_punctuation_and_lower(text):
+    for symbol in punctuation + '`‘':
+        text = text.replace(symbol, '')
+    return text.lower().capitalize()

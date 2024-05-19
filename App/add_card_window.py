@@ -8,7 +8,7 @@ from PyQt5 import uic
 from PyQt5.QtCore import QTimer, pyqtSignal, QThread
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QMainWindow, QSpinBox, QDateEdit, QPushButton, QTableWidgetItem, QFileDialog, QMessageBox, \
-    QListWidgetItem, QRadioButton, QWidget
+    QListWidgetItem, QRadioButton
 
 from src.parse_text import parser_text
 from view_card_window import ViewCardWin
@@ -163,6 +163,17 @@ class AddCardWin(QMainWindow):
         file_name, _ = QFileDialog.getOpenFileName(self, "Select Image File", "", "Images (*.png *.jpg *.jpeg *.bmp)",
                                                    options=options)
         if file_name:
+            self.all_words = []
+            self.parsed_texts = []
+
+            layout = self.widget_3.children()[0]
+            count = layout.count()
+
+            for i in range(count):
+                item = layout.itemAt(i)
+                if item.widget():
+                    item.widget().close()
+
             self.image_path = file_name
             self.start_ocr_thread()
             pixmap = QPixmap(self.image_path)
@@ -199,6 +210,8 @@ class AddCardWin(QMainWindow):
             radio_button.toggled.connect(self.render_result)
             radio_button.index = variant_index
             self.widget_3.children()[0].addWidget(radio_button)
+            if variant_index == 0:
+                radio_button.setChecked(True)
 
     def render_result(self):
         self.listWidget.clear()
